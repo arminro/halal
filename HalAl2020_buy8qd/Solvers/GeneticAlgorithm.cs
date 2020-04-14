@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TravellingSalesman;
+using HalAl2020_buy8qd.Common;
+using HalAl2020_buy8qd.Utils;
 
-namespace HalAl2020_buy8qd
+namespace HalAl2020_buy8qd.Solvers
 {
-    public class GeneticAlgorithm
+    public class GeneticAlgorithm<TSol, TSolFragment>
+        where TSol: ISolution<TSolFragment>, new()
+        where TSolFragment:ISolutionFragment
     {
         // couples with joined fitness above this will 100% not mate
         const int MATING_BARRIER = 10000;
-        public static Route Solve(IList<Town> basepool,
+        public static TSol Solve(IList<TSolFragment> basepool,
+            Func<IList<TSolFragment>, float> calculateFitness,
             int matingPercent,
             int maxGenerationCount,
-            int selectionPressure,
             int simultaneousMatingCount,
             int populationCount)
         {
             var population = InitializePopulation(basepool, populationCount);
-            Evaluate(population, CalculateDistanceForRoute);
+            Evaluate(population, calculateFitness);
             var p_best = GetElementWithMinimalFitness(population);
             
             int generation = 0;
@@ -28,12 +31,12 @@ namespace HalAl2020_buy8qd
 
                 // best matingPoolPercent will be breeding
                 int matingGroundSize = (int)(population.Count * ((float)matingPercent / 100));
-                var matingPool = new List<Route>(SelectNPercentBestParent(population, CalculateDistanceForRoute, matingGroundSize, selectionPressure)); 
-                IList <Route> nextPopulation = new List<Route>(matingGroundSize);
+                var matingPool = new List<TSol>(SelectNPercentBestParent(population, matingGroundSize)); 
+                IList<TSol> nextPopulation = new List<TSol>(matingGroundSize);
                 while (nextPopulation.Count < populationCount)
                 {
                     // selecting p1, p2....pk
-                    List<Route> grouppen = new List<Route>(simultaneousMatingCount);
+                    List<TSol> grouppen = new List<TSol>(simultaneousMatingCount);
                     for (int i = 0; i < simultaneousMatingCount; i++)
                     {
                         var swinger = matingPool[Utils.Utils.random.Next(0, matingPool.Count)];
@@ -46,7 +49,7 @@ namespace HalAl2020_buy8qd
                     nextPopulation.Add(offspring);
                 }
                 population = nextPopulation;
-                Evaluate(population, CalculateDistanceForRoute);
+                Evaluate(population, calculateFitness);
                 p_best = GetElementWithMinimalFitness(population);
                 Console.WriteLine($"Genetaion{generation}: {p_best.Fitness}");
 
@@ -61,24 +64,24 @@ namespace HalAl2020_buy8qd
             return matingPoolCount < pressure;
         }
 
-        private static void Mutate(Route offspring)
+        private static void Mutate(TSol offspring)
         {          
            int mutationWindow = Utils.Utils.random.Next(3, 20);
 
            // mutate with switching elements over an area of mutationWindow
-           var values = offspring.RoutePath;
-           int startingPoint = Utils.Utils.random.Next(0, offspring.RoutePath.Count - mutationWindow); // window should fit
+           var values = offspring.SolutionFragments;
+           int startingPoint = Utils.Utils.random.Next(0, offspring.SolutionFragments.Count - mutationWindow); // window should fit
            int endpoint = startingPoint + mutationWindow;
 
            for (int i = startingPoint; i < endpoint; i++)
            {
-               Town temp = values[i % endpoint];
+               TSolFragment temp = (TSolFragment)values[i % endpoint];
                values[i % endpoint] = values[(i + 1) % endpoint];
                values[(i + 1) % endpoint] = temp;
            }            
         }
 
-        private static Route CrossOverFitness(int basesPopCount, IList<Route> parents)
+        private static TSol CrossOverFitness(int basesPopCount, IList<TSol> parents)
         {
             // generating crossing points between cromosomes
             int[] crossingPoints = new int[Utils.Utils.random.Next(3, 31)];
@@ -90,36 +93,36 @@ namespace HalAl2020_buy8qd
             return SwitchCromosomes(parents, crossingPoints);
         }
 
-        static Route SwitchCromosomes(IList<Route> parents, int[] crossingPoints)
+        static TSol SwitchCromosomes(IList<TSol> parents, int[] crossingPoints)
         {
-            var basis = (Route)parents[Utils.Utils.random.Next(0, parents.Count)].Clone();
+            var basis = (TSol)parents[Utils.Utils.random.Next(0, parents.Count)].Clone();
             for (int i = 0; i < parents.Count; i++)
             {
                 foreach (var point in crossingPoints)
                 {
                     if (!parents[i].Equals(basis))
                     {
-                        basis.RoutePath[point] = parents[i].RoutePath[point];
+                        basis.SolutionFragments[point] = parents[i].SolutionFragments[point];
                     }
                 }
             }
             return basis;
         }
 
-        static IEnumerable<Route> SelectNPercentBestParent(IList<Route> population, Func<IList<Town>, float> calculateFitness, int matingGroundVolume, int k)
+        static IEnumerable<TSol> SelectNPercentBestParent(IList<TSol> population, int matingGroundVolume)
         {
             return population.OrderBy(pop => pop.Fitness)
                 .Take(matingGroundVolume);
         }
 
-        static Route GetElementWithMinimalFitness(IList<Route> population)
+        static TSol GetElementWithMinimalFitness(IList<TSol> population)
         {
             return population.Min();
         }
 
-        static IList<Route> InitializePopulation(IList<Town> basePool, int initialPopulationCount)
+        static IList<TSol> InitializePopulation(IList<TSolFragment> basePool, int initialPopulationCount)
         {
-            IList<Route> pop = new List<Route>(initialPopulationCount);
+            IList<TSol> pop = new List<TSol>(initialPopulationCount);
             for (int i = 0; i < initialPopulationCount; i++)
             {
                 pop.Add(GetRandomPermuation(basePool));
@@ -128,58 +131,38 @@ namespace HalAl2020_buy8qd
             return pop;
         }
 
-        static void Evaluate(IList<Route> routes, Func<IList<Town>, float> calculateFitness)
+        static void Evaluate(IList<TSol> TSols, Func<IList<TSolFragment>, float> calculateFitness)
         {
-            foreach (var populationElement in routes)
+            foreach (var populationElement in TSols)
             {
-                populationElement.Fitness = calculateFitness(populationElement.RoutePath);
+                populationElement.Fitness = calculateFitness(populationElement.SolutionFragments);
             }
         }
 
-        
 
-        public static float CalculateDistanceForRoute(IList<Town> route)
+        static TSol GetRandomPermuation(IList<TSolFragment> basePool)
         {
-            float routeLength = 0;
-            for (int i = 0; i < route.Count - 1; i++)
-            {
-                Town town1 = route[i];
-                Town town2 = route[i + 1];
+            IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
 
-                routeLength += CalculateDistanceBetweenTowns(town1, town2);
-            }
-
-            return routeLength;
-        }
-
-        static float CalculateDistanceBetweenTowns(Town town1, Town town2)
-        {
-            return (float)Math.Sqrt(Math.Pow((town2.X - town1.X), 2) + Math.Pow((town2.Y - town1.Y), 2));
-        }
-
-        static Route GetRandomPermuation(IList<Town> basePool)
-        {
-            IList<Town> result = new List<Town>(basePool.Count + 2); // the start and stop is not part of the path now
-
-            Town origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+            TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
 
             // start
             result.Add(origin);
 
-            var pool = basePool.Where(t => t != origin).ToList();
+            var pool = basePool.Where(t => !t.Equals(origin)).ToList();
 
             for (int i = 0; i < basePool.Count - 1; i++)
             {
-                Town town = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
-                result.Add(town);
-                pool.Remove(town);
+                TSolFragment TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                result.Add(TSolFragment);
+                pool.Remove(TSolFragment);
             }
 
             // back to origin
             result.Add(origin);
-            return new Route()
+            return new TSol()
             {
-                RoutePath = result
+                SolutionFragments = result
             };
         }
     }

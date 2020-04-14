@@ -2,28 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HalAl2020_buy8qd.Common;
 using HalAl2020_buy8qd.Utils;
 
 namespace HalAl2020_buy8qd
 {
-    public class SimulatedAnnealing
+    public class SimulatedAnnealing<TSol, TSolFragment>
+        where TSol : ISolution<TSolFragment>, new()
+        where TSolFragment : class, ISolutionFragment
     {
-        public static Random random = new Random();
-        public static Route Solve(IList<Town> towns,
+        public static TSol Solve(IList<TSolFragment> towns,
+            Func<IList<TSolFragment>, float> calculateFitness,
             int eps,
             int constant,
             int maxTemperature,
             int alpha)
         {
             var p = GetRandomPermuation(towns);
-            p.Fitness = CalculateDistanceForRoute(p.RoutePath);
+            p.Fitness = calculateFitness(p.SolutionFragments);
             var p_opt = p;
 
             int t = 0;
             float deltaE = 0;
             while(!StopCondition(t, maxTemperature))
             {
-                var q = GetRouteFromEpsilonDistanceRoutesWithRandomFitness(p, eps, 5000);
+                var q = GetSolutionFromEpsilonDistanceWithRandomFitness(p, eps, 5000, calculateFitness);
                 
                 deltaE += (q.Fitness - p.Fitness);
 
@@ -63,42 +66,42 @@ namespace HalAl2020_buy8qd
             return idx > tMax;
         }
 
-        public static Route GetRouteFromEpsilonDistanceRoutesWithRandomFitness(Route p, int epsilon, int numberOfEpsilons)
+        public static TSol GetSolutionFromEpsilonDistanceWithRandomFitness(TSol p, int epsilon, int numberOfEpsilons, Func<IList<TSolFragment>, float> calculateFitness)
         {
             // we use a limit on epsilons so that the program wont crash
-            List<Route> routes = new List<Route>();
+            List<TSol> routes = new List<TSol>();
             for (int i = 0; i < numberOfEpsilons; i++)
             {
-                routes.Add(GetRandomElementWithEpsDifference(p, epsilon));
+                routes.Add(GetRandomElementWithEpsDifference(p, epsilon, calculateFitness));
             }
 
             return routes[Utils.Utils.random.Next(0, routes.Count)];
         }
 
-        static Route GetRandomElementWithEpsDifference(Route original, int epsilon)
+        static TSol GetRandomElementWithEpsDifference(TSol original, int epsilon, Func<IList<TSolFragment>, float> calculateFitness)
         {
-            Town[] elements = new Town[original.RoutePath.Count];
-            Queue<Town> unusedElements = new Queue<Town>();
-            if (epsilon > original.RoutePath.Count)
+            TSolFragment[] elements = new TSolFragment[original.SolutionFragments.Count];
+            Queue<TSolFragment> unusedElements = new Queue<TSolFragment>();
+            if (epsilon > original.SolutionFragments.Count)
             {
                 throw new ArgumentException("Letöröm a kezed"); // (I <3 prog2)
             }
 
-            int numberOfIdenticalStops = original.RoutePath.Count - epsilon;
+            int numberOfIdenticalStops = original.SolutionFragments.Count - epsilon;
 
             // an eleigible element is a splice of the original list with the length of numberOfIdenticalStops
             // the order of towns is also has to be the same in the spliced segment
             int splice = Utils.Utils.random.Next(0, epsilon);
 
-            for (int i = 0; i < original.RoutePath.Count; i++)
+            for (int i = 0; i < original.SolutionFragments.Count; i++)
             {
                 if (i >= splice && i < splice + numberOfIdenticalStops)
                 {
-                    elements[i] = original.RoutePath[i];
+                    elements[i] = original.SolutionFragments[i];
                 }
                 else
                 {
-                    unusedElements.Enqueue(original.RoutePath[i]);
+                    unusedElements.Enqueue(original.SolutionFragments[i]);
                 }
             }
 
@@ -110,20 +113,20 @@ namespace HalAl2020_buy8qd
                 elements[elements.Length - 1] = elements[0];
 
                 // but to preserve eps we have to remove 1 element that is not at the beginning/end
-                int removeRandIdx = random.Next(1, splice + numberOfIdenticalStops);
+                int removeRandIdx = Utils.Utils.random.Next(1, splice + numberOfIdenticalStops);
                 unusedElements.Enqueue(elements[removeRandIdx]);
                 elements[removeRandIdx] = null;
             }
 
             else
             {
-                Town town = unusedElements.Dequeue();
+                TSolFragment town = unusedElements.Dequeue();
                 elements[0] = town;
                 elements[elements.Length - 1] = town;
             }
 
             // shuffle:https://forgetcode.com/appium/2593-extension-method-to-shuffle-an-ienumerable-in-c
-            var unused = new Queue<Town>(unusedElements.OrderBy(t => Guid.NewGuid()));
+            var unused = new Queue<TSolFragment>(unusedElements.OrderBy(t => Guid.NewGuid()));
             for (int i = 0; i < elements.Length; i++)
             {
                 if (elements[i] == null)
@@ -132,34 +135,22 @@ namespace HalAl2020_buy8qd
                 }
             }
 
-            return new Route()
+            return new TSol()
             {
-                RoutePath = elements,
-                Fitness = CalculateDistanceForRoute(elements)
+                SolutionFragments = elements,
+                Fitness = calculateFitness(elements)
             };
 
 
         }
 
-        public static float CalculateDistanceForRoute(IList<Town> route)
+        
+
+        public static TSol GetRandomPermuation(IList<TSolFragment> basePool)
         {
-            float routeLength = 0;
-            for (int i = 0; i < route.Count - 1; i++)
-            {
-                Town town1 = route[i];
-                Town town2 = route[i + 1];
+            IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
 
-                routeLength += CalculateDistanceBetweenTowns(town1, town2);
-            }
-
-            return routeLength;
-        }
-
-        public static Route GetRandomPermuation(IList<Town> basePool)
-        {
-            IList<Town> result = new List<Town>(basePool.Count + 2); // the start and stop is not part of the path now
-
-            Town origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+            TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
 
             // start
             result.Add(origin);
@@ -168,22 +159,17 @@ namespace HalAl2020_buy8qd
 
             for (int i = 0; i < basePool.Count - 1; i++)
             {
-                Town town = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                TSolFragment town = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
                 result.Add(town);
                 pool.Remove(town);
             }
 
             // back to origin
             result.Add(origin);
-            return new Route()
+            return new TSol()
             {
-                RoutePath = result
+                SolutionFragments = result
             };
-        }
-
-        static float CalculateDistanceBetweenTowns(Town town1, Town town2)
-        {
-            return (float)Math.Sqrt(Math.Pow((town2.X - town1.X), 2) + Math.Pow((town2.Y - town1.Y), 2));
         }
     }
 }

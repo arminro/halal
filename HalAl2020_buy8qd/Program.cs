@@ -1,5 +1,7 @@
-﻿using System;
-using TravellingSalesman;
+﻿using HalAl2020_buy8qd.Problems.TravellingSalesman;
+using HalAl2020_buy8qd.Solvers;
+using System;
+
 
 namespace HalAl2020_buy8qd
 {
@@ -7,17 +9,15 @@ namespace HalAl2020_buy8qd
     {
         static void Main(string[] args)
         {
-            var population = TownService.LoadTownsConfig();
+            var population = TSProvider.LoadTownsConfig();
 
-            //var opt = TownService.HillClimbingSteepestAscend(population,
-            //    TownService.GetRouteFromEpsilonDistanceRoutesWithMinimalFitness,
-            //    60,
-            //    TownService.CalculateDistanceForRoute,
-            //    TownService.StopCondition);
+            //var opt = HillClimbingSteepestAscend<Route, Town>.Solve(population,
+            //    TSProvider.CalculateRouteLengthAsFitness,
+            //    30, 30);
             //var now = DateTime.Now.GetHashCode();
-            //var opt = SimulatedAnnealing.Solve(population, 30, now, 500, 4);
+            //var opt = SimulatedAnnealing<Route, Town>.Solve(population, TSProvider.CalculateRouteLengthAsFitness, 30, now, 500, 4);
 
-            var opt = GeneticAlgorithm.Solve(population, 5, 300, 4, 3, 10000);
+            var opt = GeneticAlgorithm<Route, Town>.Solve(population, TSProvider.CalculateRouteLengthAsFitness, 5, 300, 3, 10000);
 
             Console.WriteLine("Press ENTER to end");
 

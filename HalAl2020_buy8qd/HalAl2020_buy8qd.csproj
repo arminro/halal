@@ -6,13 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="GeneticAlgorithm.cs~RF2d08176.TMP" />
+    <Compile Remove="Problems\TravellingSalesman\obj\**" />
+    <Compile Remove="Utils\bin\**" />
+    <Compile Remove="Utils\obj\**" />
+    <EmbeddedResource Remove="Problems\TravellingSalesman\obj\**" />
+    <EmbeddedResource Remove="Utils\bin\**" />
+    <EmbeddedResource Remove="Utils\obj\**" />
+    <None Remove="Problems\TravellingSalesman\obj\**" />
+    <None Remove="Utils\bin\**" />
+    <None Remove="Utils\obj\**" />
   </ItemGroup>
 
-
   <ItemGroup>
-    <Folder Include="Problems\" />
-    <Folder Include="Solvers\" />
+    <None Remove="GeneticAlgorithm.cs~RF2d08176.TMP" />
+    <None Remove="Problems\TravellingSalesman\TSProvider.cs~RF1935eb2.TMP" />
   </ItemGroup>
 
 </Project>

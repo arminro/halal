@@ -1,25 +1,25 @@
-﻿using System;
+﻿using HalAl2020_buy8qd.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TravellingSalesman
+namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 {
-    public class Route :  IComparable, ICloneable
+    public class Route :  ISolution<Town>
     {
         public float Fitness { get; set; }
-
-        public IList<Town> RoutePath { get; set; }
+        public IList<Town> SolutionFragments { get; set; }
 
         public object Clone()
         {
             Route route = new Route();
             route.Fitness = this.Fitness;
 
-            route.RoutePath = new List<Town>();
-            foreach (var item in this.RoutePath)
+            route.SolutionFragments = new List<Town>();
+            foreach (var item in this.SolutionFragments)
             {
-                route.RoutePath.Add(item);
+                route.SolutionFragments.Add(item);
             }
 
             return route;

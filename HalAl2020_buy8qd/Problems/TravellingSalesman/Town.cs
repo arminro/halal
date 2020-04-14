@@ -1,10 +1,11 @@
-﻿using System;
+﻿using HalAl2020_buy8qd.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravellingSalesman
+namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 {
-    public class Town
+    public class Town : ISolutionFragment
     {
         public int X { get; set; }
         public int Y { get; set; }
