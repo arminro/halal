@@ -9,18 +9,19 @@ namespace HalAl2020_buy8qd.Solvers
 {
     public class GeneticAlgorithm<TSol, TSolFragment>
         where TSol: ISolution<TSolFragment>, new()
-        where TSolFragment:ISolutionFragment
     {
         // couples with joined fitness above this will 100% not mate
         const int MATING_BARRIER = 10000;
         public static TSol Solve(IList<TSolFragment> basepool,
             Func<IList<TSolFragment>, float> calculateFitness,
             int matingPercent,
+            int basePopulationCount,
+            Func<IList<TSolFragment>, int, IList<TSol>> initPopulation,
             int maxGenerationCount,
             int simultaneousMatingCount,
             int populationCount)
         {
-            var population = InitializePopulation(basepool, populationCount);
+            var population = initPopulation(basepool, populationCount);
             Evaluate(population, calculateFitness);
             var p_best = GetElementWithMinimalFitness(population);
             
@@ -43,7 +44,7 @@ namespace HalAl2020_buy8qd.Solvers
                         grouppen.Add(swinger);
                     }
 
-                    var offspring = CrossOverFitness(basepool.Count, grouppen);
+                    var offspring = CrossOverFitness(basePopulationCount, grouppen);
                     Mutate(offspring);
 
                     nextPopulation.Add(offspring);
@@ -51,7 +52,7 @@ namespace HalAl2020_buy8qd.Solvers
                 population = nextPopulation;
                 Evaluate(population, calculateFitness);
                 p_best = GetElementWithMinimalFitness(population);
-                Console.WriteLine($"Genetaion{generation}: {p_best.Fitness}");
+                Console.WriteLine($"Genetaion{generation}: {p_best}");
 
                 generation++;
             }
@@ -66,7 +67,7 @@ namespace HalAl2020_buy8qd.Solvers
 
         private static void Mutate(TSol offspring)
         {          
-           int mutationWindow = Utils.Utils.random.Next(3, 20);
+           int mutationWindow = Utils.Utils.random.Next(1, offspring.SolutionFragments.Count/3);
 
            // mutate with switching elements over an area of mutationWindow
            var values = offspring.SolutionFragments;
@@ -84,7 +85,7 @@ namespace HalAl2020_buy8qd.Solvers
         private static TSol CrossOverFitness(int basesPopCount, IList<TSol> parents)
         {
             // generating crossing points between cromosomes
-            int[] crossingPoints = new int[Utils.Utils.random.Next(3, 31)];
+            int[] crossingPoints = new int[Utils.Utils.random.Next(1, basesPopCount/2)];
             for (int i = 0; i < crossingPoints.Length; i++)
             {
                 crossingPoints[i] = Utils.Utils.random.Next(0, basesPopCount);
@@ -120,16 +121,16 @@ namespace HalAl2020_buy8qd.Solvers
             return population.Min();
         }
 
-        static IList<TSol> InitializePopulation(IList<TSolFragment> basePool, int initialPopulationCount)
-        {
-            IList<TSol> pop = new List<TSol>(initialPopulationCount);
-            for (int i = 0; i < initialPopulationCount; i++)
-            {
-                pop.Add(GetRandomPermuation(basePool));
-            }
+        //static IList<TSol> InitializePopulation(IList<TSolFragment> basePool, int initialPopulationCount)
+        //{
+        //    IList<TSol> pop = new List<TSol>(initialPopulationCount);
+        //    for (int i = 0; i < initialPopulationCount; i++)
+        //    {
+        //        pop.Add(GetRandomPermuation(basePool));
+        //    }
 
-            return pop;
-        }
+        //    return pop;
+        //}
 
         static void Evaluate(IList<TSol> TSols, Func<IList<TSolFragment>, float> calculateFitness)
         {
@@ -140,30 +141,30 @@ namespace HalAl2020_buy8qd.Solvers
         }
 
 
-        static TSol GetRandomPermuation(IList<TSolFragment> basePool)
-        {
-            IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
+        //static TSol GetRandomPermuation(IList<TSolFragment> basePool)
+        //{
+        //    IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
 
-            TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+        //    TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
 
-            // start
-            result.Add(origin);
+        //    // start
+        //    result.Add(origin);
 
-            var pool = basePool.Where(t => !t.Equals(origin)).ToList();
+        //    var pool = basePool.Where(t => !t.Equals(origin)).ToList();
 
-            for (int i = 0; i < basePool.Count - 1; i++)
-            {
-                TSolFragment TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
-                result.Add(TSolFragment);
-                pool.Remove(TSolFragment);
-            }
+        //    for (int i = 0; i < basePool.Count - 1; i++)
+        //    {
+        //        TSolFragment TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+        //        result.Add(TSolFragment);
+        //        pool.Remove(TSolFragment);
+        //    }
 
-            // back to origin
-            result.Add(origin);
-            return new TSol()
-            {
-                SolutionFragments = result
-            };
-        }
+        //    // back to origin
+        //    result.Add(origin);
+        //    return new TSol()
+        //    {
+        //        SolutionFragments = result
+        //    };
+        //}
     }
 }

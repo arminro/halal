@@ -11,8 +11,6 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
     {
         const string CONFIG_NAME = "towns.txt";
 
-        #region ProblemFunctions
-
         public static float CalculateDistanceBetweenTowns(Town town1, Town town2)
         {
             return (float)Math.Sqrt(Math.Pow((town2.X - town1.X), 2) + Math.Pow((town2.Y - town1.Y), 2));
@@ -32,11 +30,7 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
             return routeLength;
         }
 
-        #endregion
 
-
-
-        #region I/O
         public static IList<Town> LoadTownsConfig()
         {
             IList<Town> towns = new List<Town>();
@@ -50,9 +44,48 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
             }
 
             return towns;
-        } 
-        #endregion
+        }
 
-       
+
+        #region GA_ONLY
+
+        public static IList<Route> InitializePopulation(IList<Town> basePool, int initialPopulationCount)
+        {
+            IList<Route> pop = new List<Route>(initialPopulationCount);
+            for (int i = 0; i < initialPopulationCount; i++)
+            {
+                pop.Add(GetRandomPermuation(basePool));
+            }
+
+            return pop;
+        }
+
+        static Route GetRandomPermuation(IList<Town> basePool)
+        {
+            IList<Town> result = new List<Town>(basePool.Count + 2); // the start and stop is not part of the path now
+
+            Town origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+
+            // start
+            result.Add(origin);
+
+            var pool = basePool.Where(t => !t.Equals(origin)).ToList();
+
+            for (int i = 0; i < basePool.Count - 1; i++)
+            {
+                Town TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                result.Add(TSolFragment);
+                pool.Remove(TSolFragment);
+            }
+
+            // back to origin
+            result.Add(origin);
+            return new Route()
+            {
+                SolutionFragments = result
+            };
+        }
+
+        #endregion
     }
 }

@@ -32,17 +32,30 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
                 return 1;
             }
 
+            
             Route other = obj as Route;
-            if(this.Fitness < other.Fitness)
+
+            if(this.Fitness == other.Fitness)
+            {
+                return 0;
+            }
+
+            else if(this.Fitness < other.Fitness)
             {
                 return -1;
             }
+
             return 1;
         }
 
         public override string ToString()
         {
-            return $"Fitness: {Fitness}";
+            return $"{Fitness}";
+        }
+
+        public string VictoryRide()
+        {
+            return this.ToString();
         }
     }
 }

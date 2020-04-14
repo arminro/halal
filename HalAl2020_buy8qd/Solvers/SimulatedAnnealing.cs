@@ -9,7 +9,7 @@ namespace HalAl2020_buy8qd
 {
     public class SimulatedAnnealing<TSol, TSolFragment>
         where TSol : ISolution<TSolFragment>, new()
-        where TSolFragment : class, ISolutionFragment
+        where TSolFragment : class
     {
         public static TSol Solve(IList<TSolFragment> towns,
             Func<IList<TSolFragment>, float> calculateFitness,

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 {
-    public class Town : ISolutionFragment
+    public class Town
     {
         public int X { get; set; }
         public int Y { get; set; }

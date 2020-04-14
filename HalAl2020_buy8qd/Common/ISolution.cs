@@ -8,5 +8,7 @@ namespace HalAl2020_buy8qd.Common
     {
         float Fitness { get; set; }
         IList<TSolFragment> SolutionFragments { get; set; }
+
+        string VictoryRide();
     }
 }
