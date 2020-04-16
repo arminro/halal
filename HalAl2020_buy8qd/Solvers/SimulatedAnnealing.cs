@@ -62,7 +62,7 @@ namespace HalAl2020_buy8qd
 
         public static bool StopCondition(int idx, int tMax)
         {
-            return idx > tMax;
+            return idx >= tMax;
         }
 
         public static TSol GetSolutionFromEpsilonDistanceWithRandomFitness(TSol p, int epsilon, int numberOfEpsilons, Func<IList<TSolFragment>, float> calculateFitness)
