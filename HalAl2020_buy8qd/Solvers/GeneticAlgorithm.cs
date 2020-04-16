@@ -144,8 +144,8 @@ namespace HalAl2020_buy8qd.Solvers
             for (int i = editStart; i < editEnd; i++)
             {
                 TSolFragment temp = values[i % editEnd];
-                values[i % editEnd] = values[(i + 1) % editEnd];
-                values[(i + 1) % editEnd] = temp;
+                values[i] = values[i + 1];
+                values[i + 1] = temp;
             }
         }
 

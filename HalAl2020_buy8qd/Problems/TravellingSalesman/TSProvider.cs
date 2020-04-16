@@ -18,6 +18,17 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
         public static float CalculateRouteLengthAsFitness(IList<Town> route)
         {
+
+            // miscareage
+            SortedSet<Town> set = new SortedSet<Town>();
+            foreach (var item in route.Skip(1)) // the 1st is the same as the last
+            {
+                if (!set.Add(item))
+                {
+                    return float.MaxValue;
+                }
+            }
+
             float routeLength = 0;
             for (int i = 0; i < route.Count - 1; i++)
             {
@@ -26,6 +37,9 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
                 routeLength += CalculateDistanceBetweenTowns(town1, town2);
             }
+
+            
+            
 
             return routeLength;
         }

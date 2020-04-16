@@ -55,7 +55,13 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
         public string VictoryRide()
         {
-            return this.ToString();
+            StringBuilder builder = new StringBuilder();
+            foreach (var item in this.SolutionFragments)
+            {
+                builder.Append($" {item.X},{item.Y} ");
+            }
+
+            return builder.ToString();
         }
     }
 }
