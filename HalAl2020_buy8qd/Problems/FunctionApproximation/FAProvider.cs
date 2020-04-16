@@ -70,10 +70,10 @@ namespace HalAl2020_buy8qd.Problems.FunctionApproximation
 
         static Function GetRandomPermuation()
         {
-            IList<float> elements = new List<float>(6); // had to change last minute :(
-            for (int i = 0; i < 6; i++)
+            IList<float> elements = new List<float>(5); // had to change last minute :(
+            for (int i = 0; i < 5; i++)
             {
-                elements.Add(Utils.Utils.random.Next(-5000, 5000));
+                elements.Add((float)Utils.random.NextDouble());
             }
 
             return new Function()

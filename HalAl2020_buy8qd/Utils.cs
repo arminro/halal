@@ -1,6 +1,9 @@
-﻿using System;
+﻿using HalAl2020_buy8qd.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace HalAl2020_buy8qd.Utils
+namespace HalAl2020_buy8qd
 {
     public class Utils
     {

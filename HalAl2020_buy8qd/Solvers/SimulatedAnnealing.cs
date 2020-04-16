@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HalAl2020_buy8qd.Common;
-using HalAl2020_buy8qd.Utils;
 
 namespace HalAl2020_buy8qd
 {
@@ -43,7 +42,7 @@ namespace HalAl2020_buy8qd
                     var temp = GetNextTemperate(t, alpha, maxTemperature);
                     var probability = Math.Pow(Math.E, -1 * (deltaE / constant * temp));
                     
-                    if(Utils.Utils.random.NextDouble() < probability)
+                    if(Utils.random.NextDouble() < probability)
                     {
                         p = q;
                     }
@@ -75,7 +74,7 @@ namespace HalAl2020_buy8qd
                 routes.Add(GetRandomElementWithEpsDifference(p, epsilon, calculateFitness));
             }
 
-            return routes[Utils.Utils.random.Next(0, routes.Count)];
+            return routes[Utils.random.Next(0, routes.Count)];
         }
 
         static TSol GetRandomElementWithEpsDifference(TSol original, int epsilon, Func<IList<TSolFragment>, float> calculateFitness)
@@ -91,7 +90,7 @@ namespace HalAl2020_buy8qd
 
             // an eleigible element is a splice of the original list with the length of numberOfIdenticalStops
             // the order of towns is also has to be the same in the spliced segment
-            int splice = Utils.Utils.random.Next(0, epsilon);
+            int splice = Utils.random.Next(0, epsilon);
 
             for (int i = 0; i < original.SolutionFragments.Count; i++)
             {
@@ -113,7 +112,7 @@ namespace HalAl2020_buy8qd
                 elements[elements.Length - 1] = elements[0];
 
                 // but to preserve eps we have to remove 1 element that is not at the beginning/end
-                int removeRandIdx = Utils.Utils.random.Next(1, splice + numberOfIdenticalStops);
+                int removeRandIdx = Utils.random.Next(1, splice + numberOfIdenticalStops);
                 unusedElements.Enqueue(elements[removeRandIdx]);
                 elements[removeRandIdx] = null;
             }
@@ -150,7 +149,7 @@ namespace HalAl2020_buy8qd
         {
             IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
 
-            TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+            TSolFragment origin = basePool[Utils.random.Next(0, basePool.Count)];
 
             // start
             result.Add(origin);
@@ -159,7 +158,7 @@ namespace HalAl2020_buy8qd
 
             for (int i = 0; i < basePool.Count - 1; i++)
             {
-                TSolFragment town = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                TSolFragment town = pool.ElementAt(Utils.random.Next(0, pool.Count()));
                 result.Add(town);
                 pool.Remove(town);
             }

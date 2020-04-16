@@ -51,7 +51,7 @@ namespace HalAl2020_buy8qd.Solvers
 
         public static bool StopCondition(int currentIter, int maxIteration)
         {
-            return maxIteration > currentIter;
+            return currentIter > maxIteration;
         }
 
         public static float CalculateFitnessForSolution(IList<TSolFragment> route, Func<TSolFragment, TSolFragment, float> calculatedifferenceBetweenFragments)
@@ -72,7 +72,7 @@ namespace HalAl2020_buy8qd.Solvers
         {
             IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
 
-            TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+            TSolFragment origin = basePool[Utils.random.Next(0, basePool.Count)];
 
             // start
             result.Add(origin);
@@ -81,7 +81,7 @@ namespace HalAl2020_buy8qd.Solvers
 
             for (int i = 0; i < basePool.Count - 1; i++)
             {
-                TSolFragment town = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                TSolFragment town = pool.ElementAt(Utils.random.Next(0, pool.Count()));
                 result.Add(town);
                 pool.Remove(town);
             }
@@ -107,7 +107,7 @@ namespace HalAl2020_buy8qd.Solvers
 
             // an eleigible element is a splice of the original list with the length of numberOfIdenticalStops
             // the order of towns also has to be the same in the spliced segment
-            int splice = Utils.Utils.random.Next(0, epsilon);
+            int splice = Utils.random.Next(0, epsilon);
 
             for (int i = 0; i < original.SolutionFragments.Count; i++)
             {
@@ -128,7 +128,7 @@ namespace HalAl2020_buy8qd.Solvers
                 elements[elements.Length - 1] = elements[0];
 
                 // but to preserve eps we have to remove 1 element that is not at the beginning/end
-                int removeRandIdx = Utils.Utils.random.Next(1, splice + numberOfIdenticalStops);
+                int removeRandIdx = Utils.random.Next(1, splice + numberOfIdenticalStops);
                 unusedElements.Enqueue(elements[removeRandIdx]);
                 elements[removeRandIdx] = null;
             }

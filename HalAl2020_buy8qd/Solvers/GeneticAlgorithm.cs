@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HalAl2020_buy8qd.Common;
-using HalAl2020_buy8qd.Utils;
+
 
 namespace HalAl2020_buy8qd.Solvers
 {
@@ -17,22 +17,25 @@ namespace HalAl2020_buy8qd.Solvers
             int matingPercent,
             int basePopulationCount,
             Func<IList<TSolFragment>, int, IList<TSol>> initPopulation,
+            Func<IList<TSol>, TSol> selector,
+            Func<IList<TSol>, int,  IEnumerable<TSol>> selectParents,
+            Action<TSol, IList<TSol>, int, int> mutateGeneSequence,
             int maxGenerationCount,
             int simultaneousMatingCount,
             int populationCount)
         {
             var population = initPopulation(basepool, populationCount);
             Evaluate(population, calculateFitness);
-            var p_best = GetElementWithMinimalFitness(population);
+            var p_best = selector(population);
             
             int generation = 0;
             
-            while (!Utils.Utils.LoopStopCondition(generation, maxGenerationCount) && population.Count > 0)
+            while (!Utils.LoopStopCondition(generation, maxGenerationCount) && population.Count > 0)
             {
 
                 // best matingPoolPercent will be breeding
                 int matingGroundSize = (int)(population.Count * ((float)matingPercent / 100));
-                var matingPool = new List<TSol>(SelectNPercentBestParent(population, matingGroundSize)); 
+                var matingPool = new List<TSol>(selectParents(population, matingGroundSize)); 
                 IList<TSol> nextPopulation = new List<TSol>(matingGroundSize);
                 while (nextPopulation.Count < populationCount)
                 {
@@ -40,18 +43,18 @@ namespace HalAl2020_buy8qd.Solvers
                     List<TSol> grouppen = new List<TSol>(simultaneousMatingCount);
                     for (int i = 0; i < simultaneousMatingCount; i++)
                     {
-                        var swinger = matingPool[Utils.Utils.random.Next(0, matingPool.Count)];
+                        var swinger = matingPool[Utils.random.Next(0, matingPool.Count)];
                         grouppen.Add(swinger);
                     }
 
                     var offspring = CrossOverFitness(basePopulationCount, grouppen);
-                    Mutate(offspring);
+                    Mutate(offspring, population, mutateGeneSequence);
 
                     nextPopulation.Add(offspring);
                 }
                 population = nextPopulation;
                 Evaluate(population, calculateFitness);
-                p_best = GetElementWithMinimalFitness(population);
+                p_best = selector(population);
                 Console.WriteLine($"Genetaion{generation}: {p_best}");
 
                 generation++;
@@ -65,30 +68,25 @@ namespace HalAl2020_buy8qd.Solvers
             return matingPoolCount < pressure;
         }
 
-        private static void Mutate(TSol offspring)
+        private static void Mutate(TSol offspring, IList<TSol> population, Action<TSol, IList<TSol>,int,int> mutateGeneSequence)
         {          
-           int mutationWindow = Utils.Utils.random.Next(1, offspring.SolutionFragments.Count/3);
+           int mutationWindow = Utils.random.Next(1, offspring.SolutionFragments.Count/3);
 
            // mutate with switching elements over an area of mutationWindow
            var values = offspring.SolutionFragments;
-           int startingPoint = Utils.Utils.random.Next(0, offspring.SolutionFragments.Count - mutationWindow); // window should fit
+           int startingPoint = Utils.random.Next(0, offspring.SolutionFragments.Count - mutationWindow); // window should fit
            int endpoint = startingPoint + mutationWindow;
 
-           for (int i = startingPoint; i < endpoint; i++)
-           {
-               TSolFragment temp = (TSolFragment)values[i % endpoint];
-               values[i % endpoint] = values[(i + 1) % endpoint];
-               values[(i + 1) % endpoint] = temp;
-           }            
+           mutateGeneSequence(offspring, population, startingPoint, endpoint);           
         }
 
         private static TSol CrossOverFitness(int basesPopCount, IList<TSol> parents)
         {
             // generating crossing points between cromosomes
-            int[] crossingPoints = new int[Utils.Utils.random.Next(1, basesPopCount/2)];
+            int[] crossingPoints = new int[Utils.random.Next(1, basesPopCount/2)];
             for (int i = 0; i < crossingPoints.Length; i++)
             {
-                crossingPoints[i] = Utils.Utils.random.Next(0, basesPopCount);
+                crossingPoints[i] = Utils.random.Next(0, basesPopCount);
             }
 
             return SwitchCromosomes(parents, crossingPoints);
@@ -96,7 +94,7 @@ namespace HalAl2020_buy8qd.Solvers
 
         static TSol SwitchCromosomes(IList<TSol> parents, int[] crossingPoints)
         {
-            var basis = (TSol)parents[Utils.Utils.random.Next(0, parents.Count)].Clone();
+            var basis = (TSol)parents[Utils.random.Next(0, parents.Count)].Clone();
             for (int i = 0; i < parents.Count; i++)
             {
                 foreach (var point in crossingPoints)
@@ -110,28 +108,6 @@ namespace HalAl2020_buy8qd.Solvers
             return basis;
         }
 
-        static IEnumerable<TSol> SelectNPercentBestParent(IList<TSol> population, int matingGroundVolume)
-        {
-            return population.OrderBy(pop => pop.Fitness)
-                .Take(matingGroundVolume);
-        }
-
-        static TSol GetElementWithMinimalFitness(IList<TSol> population)
-        {
-            return population.Min();
-        }
-
-        //static IList<TSol> InitializePopulation(IList<TSolFragment> basePool, int initialPopulationCount)
-        //{
-        //    IList<TSol> pop = new List<TSol>(initialPopulationCount);
-        //    for (int i = 0; i < initialPopulationCount; i++)
-        //    {
-        //        pop.Add(GetRandomPermuation(basePool));
-        //    }
-
-        //    return pop;
-        //}
-
         static void Evaluate(IList<TSol> TSols, Func<IList<TSolFragment>, float> calculateFitness)
         {
             foreach (var populationElement in TSols)
@@ -140,31 +116,49 @@ namespace HalAl2020_buy8qd.Solvers
             }
         }
 
+        public static T GetElementWithMinimalFitness<T>(IList<T> population)
+        {
+            return population.Min();
+        }
 
-        //static TSol GetRandomPermuation(IList<TSolFragment> basePool)
-        //{
-        //    IList<TSolFragment> result = new List<TSolFragment>(basePool.Count + 2); // the start and stop is not part of the path now
+        public static T GetElementWithMaximalFitness<T>(IList<T> population)
+        {
+            return population.Max();
+        }
 
-        //    TSolFragment origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+        public static IEnumerable<TSol> SelectNPercentBestParentByMin(IList<TSol> population, int matingGroundVolume)
+        {
+            return population.OrderBy(pop => pop.Fitness)
+                .Take(matingGroundVolume);
+        }
 
-        //    // start
-        //    result.Add(origin);
+        public static IEnumerable<TSol> SelectNPercentBestParentByMax(IList<TSol> population, int matingGroundVolume)
+        {
+            return population.OrderByDescending(pop => pop.Fitness)
+                .Take(matingGroundVolume);
+        }
 
-        //    var pool = basePool.Where(t => !t.Equals(origin)).ToList();
+        public static void MutateGeneSequenceForList(TSol host, IList<TSol> pop, int editStart, int editEnd)
+        {
+            var values = host.SolutionFragments;
+            for (int i = editStart; i < editEnd; i++)
+            {
+                TSolFragment temp = values[i % editEnd];
+                values[i % editEnd] = values[(i + 1) % editEnd];
+                values[(i + 1) % editEnd] = temp;
+            }
+        }
 
-        //    for (int i = 0; i < basePool.Count - 1; i++)
-        //    {
-        //        TSolFragment TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
-        //        result.Add(TSolFragment);
-        //        pool.Remove(TSolFragment);
-        //    }
-
-        //    // back to origin
-        //    result.Add(origin);
-        //    return new TSol()
-        //    {
-        //        SolutionFragments = result
-        //    };
-        //}
+        public static void MutateGeneSequenceForNumber(TSol host, IList<TSol> pop, int editStart, int editEnd)
+        {
+            var values = host.SolutionFragments;
+            for (int i = editStart; i < editEnd; i++)
+            {
+                // only those elements can play that already conform to certain preconditions
+                int randomPersonIdx = Utils.random.Next(0, pop.Count);
+                values[i] = pop[randomPersonIdx]
+                            .SolutionFragments[Utils.random.Next(0, pop[randomPersonIdx].SolutionFragments.Count)];
+            }
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
         public override string ToString()
         {
-            return $"{Fitness}";
+            return Fitness.ToString();
         }
 
         public string VictoryRide()

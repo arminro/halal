@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using HalAl2020_buy8qd.Utils;
+
 
 namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 {
@@ -33,15 +33,10 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
         public static IList<Town> LoadTownsConfig()
         {
-            IList<Town> towns = new List<Town>();
-            var parse = File.ReadAllLines(CONFIG_NAME)
+            var towns = File.ReadAllLines(CONFIG_NAME)
                 .Select(s => s.Split('\t'))
-                .Select(crd => new Town() { X = int.Parse(crd[0]), Y = int.Parse(crd[1])});
-                          
-            foreach (Town t in parse)
-            {
-                towns.Add(t);
-            }
+                .Select(crd => new Town() { X = int.Parse(crd[0]), Y = int.Parse(crd[1])})
+                .ToList();
 
             return towns;
         }
@@ -64,7 +59,7 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
         {
             IList<Town> result = new List<Town>(basePool.Count + 2); // the start and stop is not part of the path now
 
-            Town origin = basePool[Utils.Utils.random.Next(0, basePool.Count)];
+            Town origin = basePool[Utils.random.Next(0, basePool.Count)];
 
             // start
             result.Add(origin);
@@ -73,7 +68,7 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
             for (int i = 0; i < basePool.Count - 1; i++)
             {
-                Town TSolFragment = pool.ElementAt(Utils.Utils.random.Next(0, pool.Count()));
+                Town TSolFragment = pool.ElementAt(Utils.random.Next(0, pool.Count()));
                 result.Add(TSolFragment);
                 pool.Remove(TSolFragment);
             }

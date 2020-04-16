@@ -7,14 +7,8 @@
 
   <ItemGroup>
     <Compile Remove="Problems\TravellingSalesman\obj\**" />
-    <Compile Remove="Utils\bin\**" />
-    <Compile Remove="Utils\obj\**" />
     <EmbeddedResource Remove="Problems\TravellingSalesman\obj\**" />
-    <EmbeddedResource Remove="Utils\bin\**" />
-    <EmbeddedResource Remove="Utils\obj\**" />
     <None Remove="Problems\TravellingSalesman\obj\**" />
-    <None Remove="Utils\bin\**" />
-    <None Remove="Utils\obj\**" />
   </ItemGroup>
 
   <ItemGroup>
