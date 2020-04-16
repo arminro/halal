@@ -10,14 +10,12 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
     {
         const string CONFIG = "Salary.txt";
         public static int Gold { get; set; }
-        public static decimal barrier;
 
         public static IList<Unit> Units { get; set; }
 
         static GAOProvider()
         {
             LoadArmyUnits();
-            barrier = CalculateBarrier(Units.Select(v => v.Cost));
         }     
 
         public static float CalculateMassValorAsFitness(IList<Unit> units)
@@ -36,13 +34,13 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
             decimal smallestCost = basePool.Min(u => u.Cost);
             for (int i = 0; i < maxPopulation; i++)
             {
-                pop.Add(GetRandomPermutation(basePool, Gold, smallestCost));
+                pop.Add(GetRandomPermutation(basePool.OrderByDescending(u => u.Cost), Gold, smallestCost));
             }
 
             return pop;
         }
 
-        static Army GetRandomPermutation(IList<Unit> basePool, int goldLimit, decimal smallestCost)
+        static Army GetRandomPermutation(IOrderedEnumerable<Unit> basePool, int goldLimit, decimal smallestCost)
         {
             IList<Unit> army = new List<Unit>();
             decimal currentGold = goldLimit;
@@ -50,7 +48,7 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
             
             while (currentGold > smallestCost)
             {
-                var recruit = GetRandomUnit(basePool, currentGold);
+                var recruit = GetRandomUnit(basePool, currentGold, basePool.First().Cost);
                 army.Add(recruit);
                 currentGold -= recruit.Cost;
             }
@@ -61,13 +59,13 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
             };
         }
 
-        static Unit GetRandomUnit(IEnumerable<Unit> basePool, decimal currentGold)
+        static Unit GetRandomUnit(IEnumerable<Unit> basePool, decimal currentGold, decimal largestCost)
         {
             // we need filtering if we cannot afford one or more of the units
             var newPool = basePool;
-            if ((currentGold % barrier).Equals(0))
+            if (currentGold < largestCost)
             {
-                newPool = basePool.Where(u => u.Cost < currentGold);
+                newPool = basePool.SkipWhile(u => u.Cost > currentGold);
             }
 
             return newPool.ElementAt(Utils.random.Next(0, newPool.Count()));
@@ -84,33 +82,5 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
                 .Select(crd => new Unit() { Valor = int.Parse(crd[0]), Cost = decimal.Parse(crd[1]) })
                 .ToList();
         }
-
-
-        static decimal CalculateBarrier(IEnumerable<decimal> values)
-        {
-            decimal res = (decimal)values.ElementAt(0);
-            foreach (float value in values)
-            {
-                res = CalculateGreatestCommonDivisor(value, (double)res);
-            }
-
-            return res;
-        }
-
-        static decimal CalculateGreatestCommonDivisor(double a, double b)
-        {
-            // finding greatest common divisor from: https://www.geeksforgeeks.org/program-find-gcd-floating-point-numbers/
-            if (a < b)
-                return CalculateGreatestCommonDivisor(b, a);
-
-            if (Math.Abs(b) < 0.001)
-                return (decimal)a;
-
-            else
-                return (decimal)(CalculateGreatestCommonDivisor(b, a -
-                    Math.Floor(a / b) * b));
-        }
-
-
     }
 }
