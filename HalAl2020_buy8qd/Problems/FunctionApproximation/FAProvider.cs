@@ -41,8 +41,6 @@ namespace HalAl2020_buy8qd.Problems.FunctionApproximation
             return sum_diff;
         }
 
-
-
         public static void LoadFunctionConfig()
         {
             var parse = File.ReadAllLines(CONFIG)

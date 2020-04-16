@@ -70,7 +70,6 @@ namespace HalAl2020_buy8qd.Problems.FunctionApproximation
             }
 
             return builder.ToString();
-
         }
     }
 }

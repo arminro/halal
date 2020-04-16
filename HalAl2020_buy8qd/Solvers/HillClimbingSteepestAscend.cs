@@ -138,11 +138,9 @@ namespace HalAl2020_buy8qd.Solvers
                 TSolFragment town = unusedElements.Dequeue();
                 elements[0] = town;
                 elements[elements.Length - 1] = town;
-                //unusedElements = unusedElements.Where(u => u != town);
             }
 
             // shuffle:https://forgetcode.com/appium/2593-extension-method-to-shuffle-an-ienumerable-in-c
-
             var unused = new Queue<TSolFragment>(unusedElements.OrderBy(x => Guid.NewGuid()));
             for (int i = 0; i < elements.Length; i++)
             {
@@ -157,8 +155,6 @@ namespace HalAl2020_buy8qd.Solvers
                 SolutionFragments = elements,
                 Fitness = calculateFitness(elements)
             };
-
-
         }
 
     }

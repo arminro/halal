@@ -65,7 +65,7 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
         {
             // we need filtering if we cannot afford one or more of the units
             var newPool = basePool;
-            if (currentGold % barrier == 0)
+            if ((currentGold % barrier).Equals(0))
             {
                 newPool = basePool.Where(u => u.Cost < currentGold);
             }

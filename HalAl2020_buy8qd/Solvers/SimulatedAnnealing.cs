@@ -48,7 +48,7 @@ namespace HalAl2020_buy8qd
                     }
                 }
                 t++;
-                //Console.Clear();
+
                 Console.WriteLine($"T{t}: {p_opt.Fitness}");
             }
             return p;
@@ -104,7 +104,6 @@ namespace HalAl2020_buy8qd
                 }
             }
 
-            //var unusedElements = original.RoutePath.Where(t => !elements.Contains(t));
             // the origin is fixed
             // due to hwo rand.Next works, we cannot roll the last element
             if (splice == 0)
@@ -142,8 +141,6 @@ namespace HalAl2020_buy8qd
 
 
         }
-
-        
 
         public static TSol GetRandomPermuation(IList<TSolFragment> basePool)
         {

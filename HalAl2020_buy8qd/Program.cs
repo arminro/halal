@@ -61,20 +61,20 @@ namespace HalAl2020_buy8qd
 
             #region GameArmyOptimizer_GeneticAlgorithm
 
-            //var opt = GeneticAlgorithm<Army, Unit>.Solve(GAOProvider.Units,
-            //    GAOProvider.CalculateMassValorAsFitness,
-            //    5,
-            //    GAOProvider.Units.Count,
-            //    GAOProvider.InitializePopulation,
-            //    GeneticAlgorithm<Army, Unit>.GetElementWithMaximalFitness,
-            //    GeneticAlgorithm<Army, Unit>.SelectNPercentBestParentByMax,
-            //    GeneticAlgorithm<Army, Unit>.MutateGeneSequenceForNumber,
-            //    100, 3, 10000);
+            var opt = GeneticAlgorithm<Army, Unit>.Solve(GAOProvider.Units,
+                GAOProvider.CalculateMassValorAsFitness,
+                5,
+                GAOProvider.Units.Count,
+                GAOProvider.InitializePopulation,
+                GeneticAlgorithm<Army, Unit>.GetElementWithMaximalFitness,
+                GeneticAlgorithm<Army, Unit>.SelectNPercentBestParentByMax,
+                GeneticAlgorithm<Army, Unit>.MutateGeneSequenceForNumber,
+                50, 3, 10000);
 
             #endregion
 
 
-            //Console.WriteLine(opt.VictoryRide());
+            Console.WriteLine(opt.VictoryRide());
             Console.WriteLine("Press ENTER to end");
 
             Console.ReadLine();
