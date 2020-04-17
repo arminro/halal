@@ -74,7 +74,7 @@ namespace HalAl2020_buy8qd.Solvers
 
            // mutate with switching elements over an area of mutationWindow
            var values = offspring.SolutionFragments;
-           int startingPoint = Utils.random.Next(0, offspring.SolutionFragments.Count - mutationWindow); // window should fit
+           int startingPoint = Utils.random.Next(1, offspring.SolutionFragments.Count - mutationWindow); // window should fit
            int endpoint = startingPoint + mutationWindow;
 
            mutateGeneSequence(offspring, population, startingPoint, endpoint);           
@@ -86,7 +86,7 @@ namespace HalAl2020_buy8qd.Solvers
             int[] crossingPoints = new int[Utils.random.Next(1, basesPopCount/2)];
             for (int i = 0; i < crossingPoints.Length; i++)
             {
-                crossingPoints[i] = Utils.random.Next(0, basesPopCount);
+                crossingPoints[i] = Utils.random.Next(1, basesPopCount-1);
             }
 
             return SwitchCromosomes(parents, crossingPoints);
@@ -143,10 +143,13 @@ namespace HalAl2020_buy8qd.Solvers
             var values = host.SolutionFragments;
             for (int i = editStart; i < editEnd; i++)
             {
-                TSolFragment temp = values[i % editEnd];
+                TSolFragment temp = values[i];
                 values[i] = values[i + 1];
                 values[i + 1] = temp;
             }
+
+            // make sure that the last always stays the last, but we could have lethal mutations as well
+            values[values.Count -1] = values.First();
         }
 
         public static void MutateGeneSequenceForNumber(TSol host, IList<TSol> pop, int editStart, int editEnd)

@@ -37,7 +37,7 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
         public override bool Equals(object obj)
         {
             Town other = obj as Town;
-            return this.X == other.X && this.Y == other.Y;
+            return this.X.Equals(other.X) && this.Y.Equals(other.Y);
         }
 
         public override int GetHashCode()

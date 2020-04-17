@@ -10,7 +10,6 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
 
         public int Valor { get; set; }
 
-     
         public int CompareTo(object obj)
         {
             if (obj == null)

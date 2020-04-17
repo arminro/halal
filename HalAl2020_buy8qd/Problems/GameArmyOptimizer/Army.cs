@@ -11,7 +11,6 @@ namespace HalAl2020_buy8qd.Problems.GameArmyOptimizer
         public float Fitness { get; set; }
         public IList<Unit> SolutionFragments { get; set; }
 
-
         public object Clone()
         {
             Army route = new Army();

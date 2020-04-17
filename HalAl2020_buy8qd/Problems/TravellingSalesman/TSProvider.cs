@@ -21,11 +21,15 @@ namespace HalAl2020_buy8qd.Problems.TravellingSalesman
 
             // miscareage
             SortedSet<Town> set = new SortedSet<Town>();
-            foreach (var item in route.Skip(1)) // the 1st is the same as the last
+            foreach (var item in route.SkipLast(0)) // the 1st is the same as the last
             {
-                if (!set.Add(item))
+                if (set.Contains(item))
                 {
                     return float.MaxValue;
+                }
+                else
+                {
+                    set.Add(item);
                 }
             }
 

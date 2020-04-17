@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\**" />
     <Compile Remove="Problems\TravellingSalesman\obj\**" />
+    <EmbeddedResource Remove="Logs\**" />
     <EmbeddedResource Remove="Problems\TravellingSalesman\obj\**" />
+    <None Remove="Logs\**" />
     <None Remove="Problems\TravellingSalesman\obj\**" />
   </ItemGroup>
 

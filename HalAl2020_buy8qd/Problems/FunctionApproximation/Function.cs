@@ -10,6 +10,7 @@ namespace HalAl2020_buy8qd.Problems.FunctionApproximation
         public float Fitness { get; set; }
         public IList<float> SolutionFragments { get; set; }
 
+
         public object Clone()
         {
             Function route = new Function();

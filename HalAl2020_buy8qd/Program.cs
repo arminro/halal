@@ -1,4 +1,5 @@
-﻿using HalAl2020_buy8qd.Problems.FunctionApproximation;
+﻿using HalAl2020_buy8qd.Common;
+using HalAl2020_buy8qd.Problems.FunctionApproximation;
 using HalAl2020_buy8qd.Problems.GameArmyOptimizer;
 using HalAl2020_buy8qd.Problems.TravellingSalesman;
 using HalAl2020_buy8qd.Solvers;
@@ -17,7 +18,7 @@ namespace HalAl2020_buy8qd
             //var population = TSProvider.LoadTownsConfig();
             //var opt = HillClimbingSteepestAscend<Route, Town>.Solve(population,
             //    TSProvider.CalculateRouteLengthAsFitness,
-            //    5, 30);
+            //    15, 30);
 
             #endregion
 
@@ -32,7 +33,7 @@ namespace HalAl2020_buy8qd
             //    GeneticAlgorithm<Route, Town>.GetElementWithMinimalFitness,
             //    GeneticAlgorithm<Route, Town>.SelectNPercentBestParentByMin,
             //    GeneticAlgorithm<Route, Town>.MutateGeneSequenceForList,
-            //    50, 100, 10000);
+            //    50, 3, 10000);
 
             #endregion
 
@@ -67,6 +68,7 @@ namespace HalAl2020_buy8qd
 
 
             Console.WriteLine(opt.VictoryRide());
+            Logger.Log($"Fitness: {opt.Fitness}\n{opt.VictoryRide()}", "TravelingSalesman", "HillClimbing");
             Console.WriteLine("Press ENTER to end");
 
             Console.ReadLine();
