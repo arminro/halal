@@ -71,7 +71,7 @@ namespace HalAl2020_buy8qd.Problems.FunctionApproximation
             IList<float> elements = new List<float>(5); // had to change last minute :(
             for (int i = 0; i < 5; i++)
             {
-                elements.Add((float)Utils.random.NextDouble());
+                elements.Add((float)Utils.random.NextDouble() * 50);
             }
 
             return new Function()

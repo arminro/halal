@@ -17,22 +17,22 @@ namespace HalAl2020_buy8qd
             //var population = TSProvider.LoadTownsConfig();
             //var opt = HillClimbingSteepestAscend<Route, Town>.Solve(population,
             //    TSProvider.CalculateRouteLengthAsFitness,
-            //    20, 30);
+            //    5, 30);
 
             #endregion
 
             #region TravelingSalesmen_GeneticAlgorithm
 
-            var population = TSProvider.LoadTownsConfig();
-            var opt = GeneticAlgorithm<Route, Town>.Solve(population,
-                TSProvider.CalculateRouteLengthAsFitness,
-                5,
-                population.Count,
-                TSProvider.InitializePopulation,
-                GeneticAlgorithm<Route, Town>.GetElementWithMinimalFitness,
-                GeneticAlgorithm<Route, Town>.SelectNPercentBestParentByMin,
-                GeneticAlgorithm<Route, Town>.MutateGeneSequenceForList,
-                20, 3, 10000);
+            //var population = TSProvider.LoadTownsConfig();
+            //var opt = GeneticAlgorithm<Route, Town>.Solve(population,
+            //    TSProvider.CalculateRouteLengthAsFitness,
+            //    5,
+            //    population.Count,
+            //    TSProvider.InitializePopulation,
+            //    GeneticAlgorithm<Route, Town>.GetElementWithMinimalFitness,
+            //    GeneticAlgorithm<Route, Town>.SelectNPercentBestParentByMin,
+            //    GeneticAlgorithm<Route, Town>.MutateGeneSequenceForList,
+            //    50, 100, 10000);
 
             #endregion
 
@@ -47,21 +47,21 @@ namespace HalAl2020_buy8qd
             //    GeneticAlgorithm<Function, float>.GetElementWithMinimalFitness,
             //    GeneticAlgorithm<Function, float>.SelectNPercentBestParentByMin,
             //    GeneticAlgorithm<Function, float>.MutateGeneSequenceForNumber,
-            //    140, 3, 10000);
+            //    50, 1, 10000);
 
             #endregion
 
             #region GameArmyOptimizer_GeneticAlgorithm
 
-            //var opt = GeneticAlgorithm<Army, Unit>.Solve(GAOProvider.Units,
-            //    GAOProvider.CalculateMassValorAsFitness,
-            //    5,
-            //    GAOProvider.Units.Count,
-            //    GAOProvider.InitializePopulation,
-            //    GeneticAlgorithm<Army, Unit>.GetElementWithMaximalFitness,
-            //    GeneticAlgorithm<Army, Unit>.SelectNPercentBestParentByMax,
-            //    GeneticAlgorithm<Army, Unit>.MutateGeneSequenceForNumber,
-            //    50, 3, 10000);
+            var opt = GeneticAlgorithm<Army, Unit>.Solve(GAOProvider.Units,
+                GAOProvider.CalculateMassValorAsFitness,
+                5,
+                GAOProvider.Units.Count,
+                GAOProvider.InitializePopulation,
+                GeneticAlgorithm<Army, Unit>.GetElementWithMaximalFitness,
+                GeneticAlgorithm<Army, Unit>.SelectNPercentBestParentByMax,
+                GeneticAlgorithm<Army, Unit>.MutateGeneSequenceForNumber,
+                50, 10, 10000);
 
             #endregion
 
